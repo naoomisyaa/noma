@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "namo",
-    "slug": "namo",
+    "name": "noma",
+    "slug": "noma",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,8 +9,8 @@
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#527853"
     },
     "ios": {
       "supportsTablet": true
