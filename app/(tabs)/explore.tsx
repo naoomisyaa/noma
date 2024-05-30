@@ -1,102 +1,312 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, FlatList, ImageBackground, Button, Pressable,  } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native'
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function HomeScreen() {
 
-export default function TabTwoScreen() {
+  const [places, setPlaces] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [mainData, setMainData] = useState({ places: [], categories: [] });
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const router = useRouter();
+  const navigation= useNavigation();
+  
+
+  const handleCategoryPress = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const handlePlacePress = (placeId) => {
+    router.push(`/detail/${placeId}`);
+  };
+
+  const getCategories = () => { 
+    fetch('https://dewalaravel.com/api/categories')
+    .then(res => res.json())  
+    .then((data) => {
+      setCategories(data);
+    })  
+    
+    .catch((err) => console.log(err));
+  }
+  
+  useEffect(() => {
+    getCategories();
+    }, []);
+  
+
+  const getPlaces = async () => {
+    const response = await fetch("https://dewalaravel.com/api/places");
+    const placesData = await response.json();
+
+
+    console.log(placesData);
+    setPlaces(placesData);
+ 
+  };
+
+  useEffect(() => {
+    getPlaces();
+  }, []);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText> library
-          to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={[styles.container]}>
+      <ScrollView>
+        {/* header */}
+      <View>
+        <View style={styles.header}>
+            <Text style={styles.text}><Image source={require("@/assets/images/logo.png")} style={styles.image}/>  noma</Text>
+        </View>
+        <View style={{alignItems: 'center'}}>
+    </View>
+    </View>
+
+    {/* for you */}
+    <View style={[styles.content]}>
+    <Text style={[styles.heading]}>Category</Text>
+
+    <GestureHandlerRootView style={{ flex: 1 }}>
+    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={[styles.placeRow]}>
+  {categories.data ? (
+    categories.data.map((category, index) => (
+      <View
+        key={index}
+        style={[
+          styles.category,
+          selectedCategory === category.name ? styles.selectedCategoryButton : null,
+        ]}
+      >
+        <TouchableOpacity onPress={() => handleCategoryPress(category.name)}>
+          <Text style={[styles.categoryText]}>{category.name}</Text>
+        </TouchableOpacity>
+      </View>
+    ))
+  ) : (
+    <Text>Loading</Text>
+  )}
+</ScrollView>
+</GestureHandlerRootView>
+</View>
+
+  <View style={[styles.content]}>
+      <View style={[styles.news]}>
+         {/* search bar */}
+      {/* <Search/> */}
+  <View>
+    <StatusBar style='light' />
+    {places.data ? (
+      places.data
+        .filter((place) => selectedCategory === null || place.category.name === selectedCategory)
+        .map((place, index) => (
+          <GestureHandlerRootView style={{ flex: 1 }}>
+           <TouchableOpacity key={index} onPress={() => router.push(`/place/${place.slug}`)}>
+                      <Image style={[styles.Image]} source={{ uri: `${place.photo}` }} />
+                    </TouchableOpacity>
+                    </GestureHandlerRootView>
+        ))
+    ) : (
+      <Text>Loading</Text>
+    )}
+  </View>
+
+  <View style={{ flexDirection: 'column' }}>
+    {places.data ? (
+      places.data
+        .filter((place) => selectedCategory === null || place.category.name === selectedCategory)
+        .map((place, index) => (
+          <GestureHandlerRootView style={{ flex: 1 }}>
+          <TouchableOpacity key={index} onPress={() => router.push(`/place/${place.slug}`)}>
+          <View key={index} style={[styles.newsRight]}>
+            <Text style={[styles.categoryNews]}>{place.category.name}</Text>
+            <Text style={[styles.tittle]}>{place.name}</Text>
+          </View>
+          </TouchableOpacity>
+          </GestureHandlerRootView>
+        ))
+    ) : (
+      <Text>Loading</Text>
+    )}
+  </View>
+</View>
+</View>
+
+<View style={[styles.content]}>
+<Text style={[styles.heading]}>Recomendation</Text>
+    {/* <Text style={{color: '#FFB534', fontWeight: 400, fontSize: 14, marginLeft: 270, marginBottom: 10}}>View All</Text> */}
+
+    {/* isi berita */}
+    <View style={[styles.news]}>
+      <View>
+    <StatusBar style='light' />
+      {/* <FlatList data={recomendation} keyExtractor={(item) => item} horizontal={true}/> */}
+      {places.data ? (
+      places.data.slice(3, 8).map((place, index) => (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <TouchableOpacity key={index} onPress={() => router.push(`/place/${place.slug}`)}>
+        <View key={index}>
+          {/* <Text>{place.photo}</Text> */}
+          <Image style={[styles.Image]} 
+        source={{ uri: `${place.photo}` }} />
+        </View>
+        {/* </TouchableOpacity> */}
+        </TouchableOpacity>
+        </GestureHandlerRootView>
+      ))
+    ) : (
+      <Text>Loading</Text>
+    )}
+    </View>
+
+    <View style={{flexDirection: 'column'}}>
+    {/* <Text >Celebrity</Text> */}
+    {places.data ? (
+     places.data.slice(3, 8).map((place, index) => (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+      <TouchableOpacity key={index} onPress={() => router.push(`/place/${place.slug}`)}>
+        <View key={index} style={[styles.newsRight]}>
+          <Text style={[styles.categoryNews]}>{place.category.name}</Text>
+          <Text style={[styles.tittle]}>{place.name}</Text>
+        </View>
+        </TouchableOpacity>
+        </GestureHandlerRootView>
+      ))
+    ) : (
+      <Text>Loading</Text>
+    )}
+    </View>
+    </View>
+    </View>
+
+    
+    {/* </View>/ */}
+    {/* <Stack.Screen name='view-detail' component={detail}/> */}
+    {/* </View> */}
+    </ScrollView>
+    </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  
+  news: {
+    flexDirection: "row",
+    
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  Image: {
+     borderRadius: 10, 
+     shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+      shadowOpacity: 0.27,
+      shadowRadius: 4.65,
+
+      elevation: 6, padding: 5, width: 146, height: 129, marginTop: 20,
   },
-});
+  newsRight: {
+    flex: 1, width: 165, height: 151, justifyContent: 'center', verticalAlign:'middle',
+
+  },
+  categoryNews:{
+    flex: 1, color: '#FFB534', fontWeight: 400, fontSize: 14, marginLeft: 20,verticalAlign:'middle', marginTop: 5
+  },
+
+  tittle: {
+    flex: 1,
+    color: '#527853',
+    fontWeight: 900,
+    fontSize: 17,
+    marginLeft: 20,
+    width: 165,
+  },
+
+  container: {
+    flex: 1,
+  },
+
+  content: {
+    flex: 1, marginTop: 30 , marginLeft: 20, 
+  },
+
+  heading: {
+    color: '#000000', fontWeight: 800, fontSize: 30, marginBottom: 20,
+  },
+  category: {
+    marginRight: 10,
+    // backgroundColor: "blue"
+  },
+  categoryRow: {
+    flex: 1, marginHorizontal: 15,
+  },
+
+  categoryText: {
+    color: '#527853',
+    fontWeight: 900,
+    fontSize: 15,
+    backgroundColor: '#F3F3F3',
+    marginTop: 7,
+    padding: 7,
+    borderRadius: 7,
+    textAlign: "center",
+    borderColor: '#527853',
+    borderWidth: 2,
+    
+    },
+    selectedCategoryButton: {
+    color: 'white',
+    fontWeight: 900,
+    fontSize: 15,
+    backgroundColor: '#527853',
+    borderRadius: 7,
+    textAlign: "center",
+    },
+    item: {
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    },
+    title: {
+    fontSize: 32,
+    }, 
+    header: {
+      display: 'flex', alignItems: 'flex-start', padding: 10, marginLeft: 20, marginTop: 40
+  },
+  image: {
+      width:  30, height: 30, marginLeft: 20,
+  },
+  text: {
+      fontSize: 23, color: '#527853', fontWeight: '900', margin: 0
+  },
+  view:{
+    marginTop: 10
+    },
+    row:{
+      alignItems: 'center', shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 5,
+      backgroundColor: 'white', 
+      borderRadius: 10,
+      marginHorizontal:10, marginVertical:10, marginBottom:20
+      
+    },
+    namePlace:{
+      color: 'black', fontWeight: 'bold', fontSize:14, position: 'absolute', marginTop: 198
+    },
+    placeRow:{
+      marginLeft:10
+     },
+     imageCarousel: {
+     width:260, height:180, marginHorizontal:10, borderRadius: 4, marginTop: 10, marginBottom: 40,  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 3, },shadowOpacity: 0.27,shadowRadius: 4.65, elevation: 6,
+     }
+    }); 

@@ -1,14 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, FlatList, ImageBackground, Button,  } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, FlatList, ImageBackground, Button, Pressable,  } from 'react-native';
 import React, { useEffect, useState } from 'react';
-
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Search from '../search';
+import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native'
 
 export default function HomeScreen() {
+
   const [places, setPlaces] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [mainData, setMainData] = useState({ places: [], categories: [] });
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const router = useRouter();
+  const navigation= useNavigation();
+  
 
-  // const [selectedCategories, setSelectedCategories] = useState([]);
+  const handleCategoryPress = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const handlePlacePress = (placeId) => {
+    router.push(`/detail/${placeId}`);
+  };
 
   const getCategories = () => { 
     fetch('https://dewalaravel.com/api/categories')
@@ -31,136 +46,63 @@ export default function HomeScreen() {
 
 
     console.log(placesData);
-    // console.log(categoriesData);
     setPlaces(placesData);
-    // setCategories(categoriesData);
  
   };
 
   useEffect(() => {
     getPlaces();
-    // getCategories();
   }, []);
 
-  // const [categories, setCategories] = 
-
-  const getCategory = async () => {
-      const response = await fetch("https://dewalaravel.com/api/categories");
-      const categoryData = await response.json();
-
-      console.log(categoryData);
-
-      setCategory(categoryData);
-  };
-
-
   return (
-    
     <SafeAreaView style={[styles.container]}>
       <ScrollView>
-      <View style={[styles.content]}>
-    <Text style={[styles.heading]}>Recomendation</Text>
-    {/* <Text style={{color: '#FFB534', fontWeight: 400, fontSize: 14, marginLeft: 270, marginBottom: 10}}>View All</Text> */}
-
-    {/* isi berita */}
-    <View style={[styles.news]}>
+        {/* header */}
       <View>
-    <StatusBar style='light' />
-      {/* <FlatList data={recomendation} keyExtractor={(item) => item} horizontal={true}/> */}
-      {places.data ? (
-      places.data.slice(4, 7).map((place, index) => (
-        <View key={index}>
-          {/* <Text>{place.photo}</Text> */}
-          <Image style={[styles.Image]} 
-        source={{ uri: `${place.photo}` }} />
+        <View style={styles.header}>
+            <Text style={styles.text}><Image source={require("@/assets/images/logo.png")} style={styles.image}/>  noma</Text>
         </View>
-      ))
-    ) : (
-      <Text>Loading</Text>
-    )}
-    </View>
-
-    <View style={{flexDirection: 'column'}}>
-    {/* <Text >Celebrity</Text> */}
-    {places.data ? (
-     places.data.slice(4, 7).map((place, index) => (
-        <View key={index} style={[styles.newsRight]}>
-          <Text style={[styles.categoryNews]}>{place.category.name}</Text>
-          <Text style={[styles.tittle]}>{place.name}</Text>
-        </View>
-      ))
-    ) : (
-      <Text>Loading</Text>
-    )}
+        <View style={{alignItems: 'center'}}>
     </View>
     </View>
 
-    
+    {/* carousel */}
+
+    <View style={styles.content}>
+      <Text style={[styles.heading]}>Popular News</Text>
+      <ScrollView horizontal={true} style={[styles.placeRow]} showsHorizontalScrollIndicator={false}>
+        {places.data ? (
+          places.data.slice(0, 5).map((place, index) => (
+            <GestureHandlerRootView style={{flex:1}}>
+              <TouchableOpacity key={index} onPress={() => router.push(`/place/${place.slug}`)}>
+              {/* property 'key' disetel ke place.id, dengan asumsi bahwa setiap objek tempat memiliki properti 'id' yang unik.*/}
+              <Pressable style={[styles.row]}>
+                <Image style={[styles.imageCarousel]} source={{ uri: `${place.photo}` }} />
+                <Text style={[styles.namePlace]}>{place.name}</Text>
+              </Pressable>
+            </TouchableOpacity>
+            </GestureHandlerRootView>
+          ))
+        ) : (
+          <Text>Loading</Text>
+        )}
+      </ScrollView>
     </View>
 
     {/* for you */}
-
-    {/* <FlatList data={categories}  keyExtractor={(item)=>item} horizontal={true}/> */}
     <View style={[styles.content]}>
     <Text style={[styles.heading]}>For You</Text>
-    {/* <ScrollView horizontal={true} style={[styles.categoryRow]}>
-      {categories.data ? (
-      categories.data.map((categories, index) => (
-        <View key={index} style={[styles.category]}>
-          <Text style={[styles.categoryText]} >{categories.name}</Text>
-        </View>
-      ))
-    ) : (
-      <Text>Loading</Text>
-    )}
 
-    </ScrollView> */}
-    <View>
-            <Text>Category List</Text>
-            {category && category.map((item: any) => (
-                <Text>{item.name}</Text>
-            ))}
-        </View>
-
-      {/* <Text style={[styles.categoryText]}>All</Text> */}
-      {/* isi berita */}
       <View style={[styles.news]}>
-      <View>
-    <StatusBar style='light' />
-      {/* <FlatList data={recomendation} keyExtractor={(item) => item} horizontal={true}/> */}
-      {places.data ? (
-      places.data.map((place, index) => (
-        <View key={index}>
-          {/* <Text>{place.photo}</Text> */}
-          <Image style={[styles.Image]} 
-        source={{ uri: `${place.photo}` }} />
-        </View>
-      ))
-    ) : (
-      <Text>Loading</Text>
-    )}
-    </View>
+         {/* search bar */}
+      <Search/>
+  
+</View>
 
-    <View style={{flexDirection: 'column'}}>
-    {/* <Text >Celebrity</Text> */}
-    {places.data ? (
-     places.data.map((place, index) => (
-        <View key={index} style={[styles.newsRight]}>
-          <Text style={[styles.categoryNews]}>{place.category.name}</Text>
-          <Text style={[styles.tittle]}>{place.name}</Text>
-        </View>
-      ))
-    ) : (
-      <Text>Loading</Text>
-    )}
-    </View>
-    </View>
-
-    
+    {/* <Stack.Screen name='view-detail' component={detail}/> */}
     </View>
     </ScrollView>
     </SafeAreaView>
-    
   );
 };
 
@@ -204,11 +146,11 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    flex: 1, marginTop: 80 , marginLeft: 20,
+    flex: 1, marginTop: 30 , marginLeft: 20, 
   },
 
   heading: {
-    color: '#000000', fontWeight: 800, fontSize: 30, 
+    color: '#000000', fontWeight: 800, fontSize: 30, marginBottom: 20
   },
   category: {
     marginRight: 10,
@@ -219,27 +161,67 @@ const styles = StyleSheet.create({
   },
 
   categoryText: {
+    color: '#527853',
+    fontWeight: 900,
+    fontSize: 15,
+    backgroundColor: '#F3F3F3',
+    marginTop: 7,
+    padding: 7,
+    borderRadius: 7,
+    textAlign: "center",
+    borderColor: '#527853',
+    borderWidth: 2,
+    
+    },
+    selectedCategoryButton: {
     color: 'white',
     fontWeight: 900,
     fontSize: 15,
     backgroundColor: '#527853',
-    // width: 56,
-    // height: 30,
-    marginTop: 15,
-    padding: 7,
-    // paddingLeft: 17,
     borderRadius: 7,
     textAlign: "center",
-    // justifyContent: "center"
-    // flexDirection: "row",
-    
-  },
-  item: {
+    },
+    item: {
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
-  },
-  title: {
+    },
+    title: {
     fontSize: 32,
+    }, 
+    header: {
+      display: 'flex', alignItems: 'flex-start', padding: 10, marginLeft: 20, marginTop: 40
   },
-});
+  image: {
+      width:  30, height: 30, marginLeft: 20,
+  },
+  text: {
+      fontSize: 23, color: '#527853', fontWeight: '900', margin: 0
+  },
+  view:{
+    marginTop: 10
+    },
+    row:{
+      alignItems: 'center', shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 5,
+      backgroundColor: 'white', // Required to show shadow on Android
+      borderRadius: 10,
+      marginHorizontal:10, marginVertical:10, marginBottom:20
+      
+    },
+    namePlace:{
+      color: 'black', fontWeight: 'bold', fontSize:14, position: 'absolute', marginTop: 198
+    },
+    placeRow:{
+      marginLeft:10
+     },
+     imageCarousel: {
+     width:260, height:180, marginHorizontal:10, borderRadius: 4, marginTop: 10, marginBottom: 40,  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 3, },shadowOpacity: 0.27,shadowRadius: 4.65, elevation: 6,
+     }
+    }); 
